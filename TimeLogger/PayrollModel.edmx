@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MIS372Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Employees">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+          </Key>
+          <Property Name="EmployeeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DeptartmentID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TimeWorked">
+          <Key>
+            <PropertyRef Name="TimeWorkedID" />
+          </Key>
+          <Property Name="TimeWorkedID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeID" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" StoreGeneratedPattern="Computed" />
+          <Property Name="CheckInTime" Type="time" Precision="7" Nullable="false" />
+          <Property Name="CheckOutTime" Type="time" Precision="7" />
+          <Property Name="HoursWorked" Type="decimal" Precision="18" Scale="2" StoreGeneratedPattern="Computed" />
+          <Property Name="WeekofYear" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Employee_TimeWorked">
+          <End Role="Employees" Type="Self.Employees" Multiplicity="1" />
+          <End Role="TimeWorked" Type="Self.TimeWorked" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employees">
+              <PropertyRef Name="EmployeeID" />
+            </Principal>
+            <Dependent Role="TimeWorked">
+              <PropertyRef Name="EmployeeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="Login" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EmployeeID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="Logout" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EmployeeID" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="MIS372ModelStoreContainer">
+          <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TimeWorked" EntityType="Self.TimeWorked" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Employee_TimeWorked" Association="Self.FK_Employee_TimeWorked">
+            <End Role="Employees" EntitySet="Employees" />
+            <End Role="TimeWorked" EntitySet="TimeWorked" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MIS372Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="TimeWorked">
+          <Key>
+            <PropertyRef Name="TimeWorkedID" />
+          </Key>
+          <Property Name="TimeWorkedID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeID" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" annotation:StoreGeneratedPattern="Computed" Precision="0" />
+          <Property Name="CheckInTime" Type="Time" Precision="7" Nullable="false" />
+          <Property Name="CheckOutTime" Type="Time" Precision="7" />
+          <Property Name="HoursWorked" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="Employee" Relationship="MIS372Model.FK_Employee_TimeWorked" FromRole="TimeWorked" ToRole="Employee" />
+          <Property Name="WeekofYear" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="PayrollModel" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="TimeWorkeds" EntityType="Self.TimeWorked" />
+          <FunctionImport Name="Login">
+          <Parameter Name="EmployeeID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Logout">
+          <Parameter Name="EmployeeID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Employees" EntityType="MIS372Model.Employee" />
+          <AssociationSet Name="FK_Employee_TimeWorked" Association="MIS372Model.FK_Employee_TimeWorked">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="TimeWorked" EntitySet="TimeWorkeds" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmployeeID" />
+          </Key>
+          <Property Name="EmployeeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DeptartmentID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="TimeWorkeds" Relationship="MIS372Model.FK_Employee_TimeWorked" FromRole="Employee" ToRole="TimeWorked" />
+        </EntityType>
+        <Association Name="FK_Employee_TimeWorked">
+          <End Type="MIS372Model.Employee" Role="Employee" Multiplicity="1" />
+          <End Type="MIS372Model.TimeWorked" Role="TimeWorked" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeID" />
+            </Principal>
+            <Dependent Role="TimeWorked">
+              <PropertyRef Name="EmployeeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MIS372ModelStoreContainer" CdmEntityContainer="PayrollModel">
+          <EntitySetMapping Name="TimeWorkeds">
+            <EntityTypeMapping TypeName="MIS372Model.TimeWorked">
+              <MappingFragment StoreEntitySet="TimeWorked">
+                <ScalarProperty Name="WeekofYear" ColumnName="WeekofYear" />
+                <ScalarProperty Name="TimeWorkedID" ColumnName="TimeWorkedID" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="CheckInTime" ColumnName="CheckInTime" />
+                <ScalarProperty Name="CheckOutTime" ColumnName="CheckOutTime" />
+                <ScalarProperty Name="HoursWorked" ColumnName="HoursWorked" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Login" FunctionName="MIS372Model.Store.Login" />
+          <FunctionImportMapping FunctionImportName="Logout" FunctionName="MIS372Model.Store.Logout" />
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="MIS372Model.Employee">
+              <MappingFragment StoreEntitySet="Employees">
+                <ScalarProperty Name="DeptartmentID" ColumnName="DeptartmentID" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
